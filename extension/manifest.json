@@ -1,0 +1,35 @@
+{
+    "manifest_version": 3,
+    "name": "Affiliate Hub - Shopee Sync",
+    "version": "2.0.0",
+    "description": "Streamo-style extension for syncing Shopee data to Affiliate Hub Dashboard",
+    "permissions": [
+        "cookies",
+        "activeTab",
+        "storage",
+        "scripting",
+        "tabs"
+    ],
+    "host_permissions": [
+        "https://*.shopee.co.id/*",
+        "https://*.shopee.com.my/*",
+        "https://*.shopee.sg/*",
+        "http://localhost:8000/*"
+    ],
+    "background": {
+        "service_worker": "service_worker.js"
+    },
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "icon16.png",
+            "48": "icon48.png",
+            "128": "icon128.png"
+        }
+    },
+    "icons": {
+        "16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
+    }
+}

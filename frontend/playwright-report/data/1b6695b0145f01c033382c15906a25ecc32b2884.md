@@ -1,0 +1,44 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - img [ref=e7]
+    - heading "Welcome Back" [level=2] [ref=e10]
+    - paragraph [ref=e11]: Sign in to Affiliate Dashboard
+  - generic [ref=e13]:
+    - generic [ref=e14]:
+      - img [ref=e15]
+      - paragraph [ref=e18]: Login failed
+    - generic [ref=e19]:
+      - generic [ref=e20]: Username or Email
+      - generic [ref=e21]:
+        - generic:
+          - img
+        - textbox "Username or Email" [ref=e22]:
+          - /placeholder: Enter your username or email
+          - text: test_super
+    - generic [ref=e23]:
+      - generic [ref=e24]: Password
+      - generic [ref=e25]:
+        - generic:
+          - img
+        - textbox "Password" [ref=e26]:
+          - /placeholder: Enter your password
+          - text: password123
+        - button [ref=e27] [cursor=pointer]:
+          - img [ref=e28]
+    - generic [ref=e32]:
+      - checkbox "Remember me" [ref=e33] [cursor=pointer]
+      - generic [ref=e34] [cursor=pointer]: Remember me
+    - button "Sign In" [ref=e35] [cursor=pointer]
+    - generic [ref=e36]:
+      - paragraph [ref=e37]: "🔐 Default Login Credentials:"
+      - generic [ref=e38]:
+        - paragraph [ref=e39]: "Username: admin"
+        - paragraph [ref=e40]: "Password: Admin123!"
+      - paragraph [ref=e41]: ⚠️ Change password after first login!
+  - generic [ref=e42]:
+    - paragraph [ref=e43]: Affiliate Dashboard v1.0
+    - paragraph [ref=e44]: Powered by FastAPI & React
+```
