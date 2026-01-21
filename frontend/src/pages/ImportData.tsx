@@ -89,7 +89,7 @@ const ImportData: React.FC = () => {
 
         try {
             setLoading(true)
-            const res = await importApi.executeImport({
+            await importApi.executeImport({
                 shop_id: selectedAccountId,
                 import_type: preview.detected_type === 'unknown' ? 'sales' : preview.detected_type,
                 mapping: mapping,
@@ -132,7 +132,7 @@ const ImportData: React.FC = () => {
     // This is acceptable for files < 5MB.
 
     const parseCsvLocally = (file: File): Promise<any[]> => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const reader = new FileReader()
             reader.onload = (e) => {
                 const text = e.target?.result as string

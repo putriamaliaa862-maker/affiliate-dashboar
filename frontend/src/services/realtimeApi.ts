@@ -1,7 +1,7 @@
 /**
  * Realtime API service for frontend
  */
-import api from './client';
+import api from '@/api/client';
 
 export interface RealtimeSnapshot {
     id: number;

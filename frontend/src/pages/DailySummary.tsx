@@ -15,7 +15,6 @@ const DailySummary: React.FC = () => {
     const [accounts, setAccounts] = useState<any[]>([])
     const [data, setData] = useState<DailySummaryResponse | null>(null)
     const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         fetchAccounts()

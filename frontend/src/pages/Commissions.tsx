@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import {
   Search,
   Download,
-  Filter,
   CheckCircle2,
   Clock,
   AlertCircle,

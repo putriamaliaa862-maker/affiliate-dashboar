@@ -8,8 +8,9 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 
 // Role hierarchy for permission checking
-const ROLE_HIERARCHY = {
+const ROLE_HIERARCHY: Record<string, number> = {
     super_admin: 4,
+    owner: 4,  // owner = super_admin
     admin: 3,
     leader: 2,
     affiliate: 1
@@ -17,7 +18,7 @@ const ROLE_HIERARCHY = {
 
 interface ProtectedRouteProps {
     children: React.ReactNode
-    requiredRole?: 'super_admin' | 'admin' | 'leader' | 'affiliate'
+    requiredRole?: 'super_admin' | 'admin' | 'leader' | 'affiliate' | 'owner'
 }
 
 /**

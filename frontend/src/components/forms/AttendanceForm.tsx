@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { attendanceApi, AttendanceCreate } from '@/api/attendance'
+import { AttendanceCreate } from '@/api/attendance'
 import { employeeApi } from '@/api/employees'
 import { Employee } from '@/types'
 

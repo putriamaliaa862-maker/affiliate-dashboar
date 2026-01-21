@@ -3,11 +3,13 @@
  * Helper functions for role-based access control
  */
 
-export type UserRole = 'super_admin' | 'admin' | 'leader' | 'affiliate'
+export type UserRole = 'super_admin' | 'admin' | 'leader' | 'affiliate' | 'owner'
 
 // Role hierarchy (higher number = more permissions)
+// Note: 'owner' is treated as 'super_admin'
 export const ROLE_HIERARCHY: Record<UserRole, number> = {
     super_admin: 4,
+    owner: 4,  // owner = super_admin
     admin: 3,
     leader: 2,
     affiliate: 1
@@ -69,6 +71,7 @@ export const canManageTeam = (role: UserRole): boolean => {
 export const getRoleDisplay = (role: UserRole): string => {
     const roleNames: Record<UserRole, string> = {
         super_admin: 'Super Admin',
+        owner: 'Owner',
         admin: 'Admin',
         leader: 'Leader',
         affiliate: 'Affiliate'
@@ -84,6 +87,7 @@ export const getRoleDisplay = (role: UserRole): string => {
 export const getRoleBadgeColor = (role: UserRole): string => {
     const colors: Record<UserRole, string> = {
         super_admin: 'bg-purple-100 text-purple-800',
+        owner: 'bg-purple-100 text-purple-800',
         admin: 'bg-red-100 text-red-800',
         leader: 'bg-blue-100 text-blue-800',
         affiliate: 'bg-green-100 text-green-800'
