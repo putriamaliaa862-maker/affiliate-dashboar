@@ -128,7 +128,7 @@ const DashboardOwner: React.FC = () => {
 
     // Premium features data
     const [premiumData, setPremiumData] = useState<PremiumDashboardData | null>(null)
-    const [loadingPremium, setLoadingPremium] = useState(false)
+    const [_loadingPremium, setLoadingPremium] = useState(false)
 
     // Check if user can access premium features
     const isPremiumUser = user && ['owner', 'super_admin', 'supervisor'].includes(user.role.toLowerCase().replace(' ', '_'))
