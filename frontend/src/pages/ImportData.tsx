@@ -84,52 +84,7 @@ const ImportData: React.FC = () => {
         }
     }
 
-    const handleExecute = async () => {
-        if (!preview || !selectedAccountId) return
-
-        try {
-            setLoading(true)
-            await importApi.executeImport({
-                shop_id: selectedAccountId,
-                import_type: preview.detected_type === 'unknown' ? 'sales' : preview.detected_type,
-                mapping: mapping,
-                rows: preview.sample_rows // NOTE: In prod, upload file again or store ID. For MVP we send rows if small, but here we just send sample? 
-                // WAIT: The backend execute expects "rows". But preview only returned specific rows.
-                // Backend logic in previous step was robust but "rows" argument in ExecuteRequest implies validation of parsed rows.
-                // Actually, for a proper implementation without re-uploading, I should store the DataFrame in a temporal cache or send the file again.
-                // For this MVP, let's re-parse the file in frontend or simply fix backend to accept file again?
-                // OR: Simpler: The backend `preview` gave us `sample_rows` (10). It didn't give ALL rows.
-                // I need to change frontend to standard file upload logic or re-upload file in execute.
-            })
-            // WAIT: I made a mistake in previous thought. Passing "rows" is bad for large files.
-            // Let's modify the frontend to pass the file AGAIN to execute, or better, change backend to accept file in execute.
-            // However, sticking to the plan: I will implement client-side CSV parsing if I pass rows, OR easiest:
-            // Let's pass the file again to execute? No, "mapping" needs to be JSON.
-            // I will assume for this step I'll fix the backend to accept rows OR file. 
-            // Actually, looking at my backend code: `class ImportExecuteRequest(BaseModel): rows: List[Dict]`
-            // This means I need to send ALL rows.
-            // So Frontend needs to parse CSV to JSON to send it? That's heavy.
-            // BETTER FIX: I will modify backend to accept File + Mapping stringified.
-            // BUT for now, to avoid rewriting backend, I will implement a quick client-side parser? 
-            // No, that's tech debt.
-            // Let's pause and fix backend in next turn if needed. 
-            // ACTUALLY: The prompt said "Import logic (Wajib Detail): Parsing CSV...".
-            // I implemented parsing in backend preview.
-            // I should have implemented parsing in backend execute too.
-            // Let's check backend code I wrote... 
-            // `execute_import` takes `ImportExecuteRequest` body. It does `request.rows`.
-            // This assumes frontend sends all rows.
-            // OK. I will implement a simple client-side parser here to match the backend expectation for MVP.
-            // Or I can just parse it in JS. It is not too hard.
-        } catch (err: any) {
-            // ...
-        }
-    }
-
-    // Revised Strategy for Execute:
-    // 1. Frontend parses CSV locally (using simple split or library)
-    // 2. Sends JSON to backend.
-    // This is acceptable for files < 5MB.
+    // handleExecute removed - using handleExecuteWithParsing instead
 
     const parseCsvLocally = (file: File): Promise<any[]> => {
         return new Promise((resolve) => {

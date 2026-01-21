@@ -22,7 +22,7 @@ const AdsCenter: React.FC = () => {
     const [accounts, setAccounts] = useState<any[]>([])
 
     // Load States
-    const [loadingAccounts, setLoadingAccounts] = useState(false)
+    const [_loadingAccounts, setLoadingAccounts] = useState(false)
 
     // Modals
     const [spendModal, setSpendModal] = useState<{ isOpen: boolean, accountId: number, accountName: string } | null>(null)
