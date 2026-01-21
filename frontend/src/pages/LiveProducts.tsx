@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import liveProductsApi, { LiveProductSnapshot, LiveSyncLog } from '@/api/liveProducts'
+import api from '@/api/client'
 import { useAuth } from '@/hooks/useAuth'
 
 const LiveProducts: React.FC = () => {
@@ -14,9 +15,23 @@ const LiveProducts: React.FC = () => {
     // Filters
     const [selectedDate, setSelectedDate] = useState<string>(getTodayDate())
     const [selectedAccount, setSelectedAccount] = useState<string>('')
+    const [accounts, setAccounts] = useState<any[]>([])
 
     // RBAC: Check if user can sync
     const canSync = user && !['host', 'affiliate'].includes(user.role.toLowerCase().replace(' ', '_'))
+
+    // Fetch accounts on mount
+    useEffect(() => {
+        const loadAccounts = async () => {
+            try {
+                const res = await api.get('/shopee-accounts')
+                setAccounts(res.data)
+            } catch (err) {
+                console.error('Failed to load accounts:', err)
+            }
+        }
+        loadAccounts()
+    }, [])
 
     useEffect(() => {
         fetchData()
@@ -130,8 +145,9 @@ const LiveProducts: React.FC = () => {
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="">Semua Akun</option>
-                            <option value="1">Akun 1</option>
-                            <option value="2">Akun 2</option>
+                            {accounts.map(acc => (
+                                <option key={acc.id} value={acc.id}>{acc.account_name}</option>
+                            ))}
                         </select>
                     </div>
                     <div className="flex items-end">
@@ -148,8 +164,8 @@ const LiveProducts: React.FC = () => {
                             disabled={syncing || !canSync}
                             title={!canSync ? 'Host gak bisa sync, minta Leader ya' : 'Sync via Extension'}
                             className={`w-full px-4 py-2 rounded-lg transition-colors ${canSync
-                                    ? 'bg-green-600 text-white hover:bg-green-700'
-                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                ? 'bg-green-600 text-white hover:bg-green-700'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 }`}
                         >
                             {syncing ? 'Syncing...' : '⚡ Sync Sekarang'}
@@ -158,6 +174,28 @@ const LiveProducts: React.FC = () => {
                 </div>
             </div>
 
+            {/* KPI Cards - Daily Summary */}
+            {activeTab === 'snapshots' && products.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white rounded-lg shadow p-6">
+                    <div className="text-center">
+                        <p className="text-sm text-gray-500 mb-1">Total Produk</p>
+                        <h3 className="text-3xl font-bold text-gray-900">{products.length}</h3>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm text-gray-500 mb-1">Total Terjual</p>
+                        <h3 className="text-3xl font-bold text-green-600">{products.reduce((sum, p) => sum + p.sold_qty, 0).toLocaleString('id-ID')}</h3>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm text-gray-500 mb-1">Total GMV</p>
+                        <h3 className="text-3xl font-bold text-blue-600">{formatRupiah(products.reduce((sum, p) => sum + p.gmv, 0))}</h3>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm text-gray-500 mb-1">Produk Gacor 🔥</p>
+                        <h3 className="text-3xl font-bold text-purple-600">{products.filter(p => p.sold_qty > 20 || p.gmv > 1000000).length}</h3>
+                    </div>
+                </div>
+            )}
+
             {/* Tabs */}
             <div className="bg-white rounded-lg shadow">
                 <div className="border-b border-gray-200">
@@ -165,8 +203,8 @@ const LiveProducts: React.FC = () => {
                         <button
                             onClick={() => setActiveTab('snapshots')}
                             className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${activeTab === 'snapshots'
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 }`}
                         >
                             📊 Snapshot Produk
@@ -174,8 +212,8 @@ const LiveProducts: React.FC = () => {
                         <button
                             onClick={() => setActiveTab('ranking')}
                             className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${activeTab === 'ranking'
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 }`}
                         >
                             🏆 Ranking Hari Ini
@@ -183,8 +221,8 @@ const LiveProducts: React.FC = () => {
                         <button
                             onClick={() => setActiveTab('logs')}
                             className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${activeTab === 'logs'
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 }`}
                         >
                             📝 Log Sync
@@ -239,41 +277,50 @@ const LiveProducts: React.FC = () => {
                             )}
 
                             {/* Tab: Ranking */}
-                            {activeTab === 'ranking' && ranking && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <h3 className="text-lg font-bold mb-4">🏆 Top 10 by GMV</h3>
-                                        <div className="space-y-2">
-                                            {ranking.top_by_gmv?.map((item: any, idx: number) => (
-                                                <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="text-2xl font-bold text-gray-400">#{idx + 1}</span>
-                                                        <div>
-                                                            <div className="font-medium text-gray-900">{item.product_name}</div>
-                                                            <div className="text-sm text-gray-500">{formatRupiah(item.gmv)}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
+                            {activeTab === 'ranking' && (
+                                <>
+                                    {!ranking || (ranking.top_by_gmv?.length === 0 && ranking.top_by_sold?.length === 0) ? (
+                                        <div className="text-center py-12 bg-gray-50 rounded-lg">
+                                            <p className="text-gray-600 text-lg mb-2">Belum ada data ranking 📊</p>
+                                            <p className="text-gray-500 text-sm">Sync dulu ya biar ada data!</p>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-bold mb-4">🔥 Top 10 by Terjual</h3>
-                                        <div className="space-y-2">
-                                            {ranking.top_by_sold?.map((item: any, idx: number) => (
-                                                <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="text-2xl font-bold text-gray-400">#{idx + 1}</span>
-                                                        <div>
-                                                            <div className="font-medium text-gray-900">{item.product_name}</div>
-                                                            <div className="text-sm text-gray-500">{item.sold_qty} terjual</div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <h3 className="text-lg font-bold mb-4">🏆 Top 10 by GMV</h3>
+                                                <div className="space-y-2">
+                                                    {ranking.top_by_gmv?.map((item: any, idx: number) => (
+                                                        <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-2xl font-bold text-gray-400">#{idx + 1}</span>
+                                                                <div>
+                                                                    <div className="font-medium text-gray-900">{item.product_name}</div>
+                                                                    <div className="text-sm text-gray-500">{formatRupiah(item.gmv)}</div>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    ))}
                                                 </div>
-                                            ))}
+                                            </div>
+                                            <div>
+                                                <h3 className="text-lg font-bold mb-4">🔥 Top 10 by Terjual</h3>
+                                                <div className="space-y-2">
+                                                    {ranking.top_by_sold?.map((item: any, idx: number) => (
+                                                        <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-2xl font-bold text-gray-400">#{idx + 1}</span>
+                                                                <div>
+                                                                    <div className="font-medium text-gray-900">{item.product_name}</div>
+                                                                    <div className="text-sm text-gray-500">{item.sold_qty} terjual</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    )}
+                                </>
                             )}
 
                             {/* Tab: Logs */}

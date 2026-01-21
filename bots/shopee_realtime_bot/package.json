@@ -1,0 +1,18 @@
+{
+    "name": "shopee-realtime-bot",
+    "version": "1.0.0",
+    "description": "24H Playwright bot for Shopee realtime scraping",
+    "main": "supervisor.js",
+    "scripts": {
+        "start": "node supervisor.js",
+        "worker": "node worker.js",
+        "test": "node worker.js --test"
+    },
+    "dependencies": {
+        "playwright": "^1.40.0",
+        "axios": "^1.6.0",
+        "uuid": "^9.0.0"
+    },
+    "author": "Streamo",
+    "license": "UNLICENSED"
+}

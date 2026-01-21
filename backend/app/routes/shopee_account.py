@@ -12,7 +12,7 @@ from app.core.permissions import verify_financial_access, apply_scope_restrictio
 # Setup Logger
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(prefix="/api/shopee-accounts", tags=["Shopee Accounts"])
 
 
 @router.get("/")
@@ -23,24 +23,36 @@ def list_accounts(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get all Shopee accounts or by studio.
-    RBAC: Owner/Admin (All), Host (Scoped)
+    Get all Shopee accounts with RBAC scoping.
+    
+    RBAC Rules:
+    - super_admin/owner/supervisor: ALL accounts
+    - leader/partner: Only assigned accounts
+    - host: Only assigned accounts (read-only)
     """
     start_time = time.time()
     logger.info(f"Accounts List: User={current_user.username} Role={current_user.role}")
 
-    # RBAC Check (Access Control)
-    # Re-using financial access permission as a general 'can view business data' check
-    # Or strict check just for this module
-    if current_user.role not in ["super_admin", "admin", "owner", "supervisor", "partner", "leader", "host", "affiliate"]:
-         raise HTTPException(status_code=403, detail="Forbidden")
-
+    # RBAC Check - import here to avoid circular dependency
+    from app.core.rbac import get_allowed_account_ids
+    
+    # Get allowed account IDs for this user
+    allowed_account_ids = get_allowed_account_ids(db, current_user)
+    
+    logger.info(f"RBAC: User {current_user.id} can access {len(allowed_account_ids)} accounts")
+    
+    # Build query with RBAC filtering
     query = db.query(ShopeeAccount)
     
-    # Optional: Apply Scope if needed (e.g. Host only sees their accounts?)
-    # Currently ShopeeAccount doesn't have handler_id directly, but we might want to restrict later.
-    # For now, allow all accounts viewable by authorized users, OR apply scope if logic available.
+    # Apply RBAC scope (unless user has full access)
+    if current_user.role not in ['super_admin', 'owner', 'supervisor']:
+        if not allowed_account_ids:
+            # User has no assigned accounts
+            logger.warning(f"User {current_user.id} has no assigned accounts")
+            return []
+        query = query.filter(ShopeeAccount.id.in_(allowed_account_ids))
     
+    # Apply optional studio filter
     if studio_id:
         query = query.filter(ShopeeAccount.studio_id == studio_id)
         
@@ -49,6 +61,31 @@ def list_accounts(
     duration = (time.time() - start_time) * 1000
     logger.info(f"Accounts Fetched: {len(accounts)} records in {duration:.2f}ms")
     
+    return accounts
+
+
+@router.get("/my")
+def get_my_accounts(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get accounts assigned to current user only.
+    Always returns scoped view regardless of role.
+    """
+    from app.core.rbac import get_allowed_account_ids
+    
+    allowed_account_ids = get_allowed_account_ids(db, current_user)
+    
+    if not allowed_account_ids:
+        logger.info(f"User {current_user.id} has no assigned accounts")
+        return []
+    
+    accounts = db.query(ShopeeAccount).filter(
+        ShopeeAccount.id.in_(allowed_account_ids)
+    ).all()
+    
+    logger.info(f"User {current_user.id} retrieved {len(accounts)} assigned accounts")
     return accounts
 
 

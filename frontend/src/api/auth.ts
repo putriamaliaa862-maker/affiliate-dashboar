@@ -71,13 +71,43 @@ export const getCurrentUser = async (): Promise<User> => {
     return response.data
 }
 
+// ==================== ACCESS CODE MANAGEMENT ====================
+
+export interface AccessCodeResponse {
+    access_code: string | null
+    has_code: boolean
+}
+
+export interface RegenerateAccessCodeResponse {
+    access_code: string
+    message: string
+}
+
+/**
+ * Get current user's access code
+ */
+export const getMyAccessCode = async (): Promise<AccessCodeResponse> => {
+    const response = await client.get<AccessCodeResponse>('/auth/access-code/me')
+    return response.data
+}
+
+/**
+ * Generate or regenerate access code for current user
+ */
+export const regenerateAccessCode = async (): Promise<RegenerateAccessCodeResponse> => {
+    const response = await client.post<RegenerateAccessCodeResponse>('/auth/access-code/regenerate')
+    return response.data
+}
+
 // ==================== Export ====================
 
 const authApi = {
     login,
     logout,
     refreshToken,
-    getCurrentUser
+    getCurrentUser,
+    getMyAccessCode,
+    regenerateAccessCode
 }
 
 export default authApi

@@ -27,6 +27,9 @@ import DailySummary from '@/pages/DailySummary'
 import DailyInsights from '@/pages/DailyInsights'
 import AdsCenter from '@/pages/AdsCenter'
 import LiveProducts from '@/pages/LiveProducts'
+import RealtimeMonitor from '@/pages/realtime/RealtimeMonitor'
+import CreatorLiveOverview from '@/pages/realtime/CreatorLiveOverview'
+import AdsOverviewPage from '@/pages/realtime/AdsOverview'
 
 // Components
 import Sidebar from '@/components/Sidebar'
@@ -256,6 +259,39 @@ function App() {
               <ProtectedRoute requiredRole="admin">
                 <AuthenticatedLayout>
                   <ImportData />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/realtime"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AuthenticatedLayout>
+                  <RealtimeMonitor />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/realtime/creator-live"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AuthenticatedLayout>
+                  <CreatorLiveOverview />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/realtime/ads"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AuthenticatedLayout>
+                  <AdsOverviewPage />
                 </AuthenticatedLayout>
               </ProtectedRoute>
             }

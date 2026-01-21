@@ -20,7 +20,7 @@ from app.auth.schemas import (
 from app.auth.jwt import get_password_hash, verify_password
 from app.auth.dependencies import get_current_user, require_role
 
-router = APIRouter(prefix="/users", tags=["User Management"])
+router = APIRouter(prefix="/api/users", tags=["User Management"])
 
 
 @router.post("", response_model=UserResponse, status_code=status.HTTP_201_CREATED)

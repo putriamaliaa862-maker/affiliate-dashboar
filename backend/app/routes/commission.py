@@ -20,7 +20,7 @@ from app.core.permissions import verify_financial_access, apply_scope_restrictio
 # Setup logger
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(prefix="/api/commissions", tags=["Commissions"])
 
 
 class PayoutSummary(BaseModel):

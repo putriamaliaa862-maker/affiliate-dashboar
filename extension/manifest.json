@@ -1,35 +1,53 @@
 {
     "manifest_version": 3,
-    "name": "Affiliate Hub - Shopee Sync",
+    "name": "Shopee Affiliate Scraper",
     "version": "2.0.0",
-    "description": "Streamo-style extension for syncing Shopee data to Affiliate Hub Dashboard",
+    "description": "Auto-sync Shopee Live data to your Affiliate Dashboard",
     "permissions": [
-        "cookies",
-        "activeTab",
         "storage",
+        "tabs",
         "scripting",
-        "tabs"
+        "activeTab"
     ],
     "host_permissions": [
         "https://*.shopee.co.id/*",
-        "https://*.shopee.com.my/*",
-        "https://*.shopee.sg/*",
-        "http://localhost:8000/*"
+        "https://affiliate.shopee.co.id/*",
+        "https://creator.shopee.co.id/*",
+        "https://seller.shopee.co.id/*",
+        "https://live.shopee.co.id/*",
+        "http://localhost:8000/*",
+        "http://127.0.0.1:8000/*"
     ],
     "background": {
-        "service_worker": "service_worker.js"
+        "service_worker": "background/service-worker.js",
+        "type": "module"
     },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://affiliate.shopee.co.id/*",
+                "https://creator.shopee.co.id/*",
+                "https://seller.shopee.co.id/*",
+                "https://live.shopee.co.id/*"
+            ],
+            "js": [
+                "content/shopee-scraper.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
     "action": {
-        "default_popup": "popup.html",
+        "default_popup": "popup/popup.html",
         "default_icon": {
-            "16": "icon16.png",
-            "48": "icon48.png",
-            "128": "icon128.png"
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
         }
     },
+    "options_page": "options/options.html",
     "icons": {
-        "16": "icon16.png",
-        "48": "icon48.png",
-        "128": "icon128.png"
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
     }
 }

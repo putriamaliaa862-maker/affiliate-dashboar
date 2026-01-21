@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import {
-    Crown, RefreshCw, Calendar, Filter, AlertTriangle,
+    Crown, RefreshCw, Calendar, AlertTriangle,
     TrendingUp, TrendingDown, DollarSign, ShoppingCart,
     BarChart3, Target, Zap, Users, Clock, Award,
     AlertCircle, CheckCircle, XCircle
 } from 'lucide-react'
 import api from '@/api/client'
 import { useAuth } from '@/hooks/useAuth'
+import premiumApi, { PremiumDashboardData } from '@/api/premium'
+import {
+    RealtimePerformanceChart,
+    TopPerformersWidget,
+    AlertCenter,
+    FinancialSummary,
+    QuickActionsDashboard
+} from '@/components/premium/PremiumFeatures'
 
 // Types
 interface SyncStatus {
@@ -118,6 +126,13 @@ const DashboardOwner: React.FC = () => {
     const [accounts, setAccounts] = useState<any[]>([])
     const [alertsEnabled, setAlertsEnabled] = useState(true)
 
+    // Premium features data
+    const [premiumData, setPremiumData] = useState<PremiumDashboardData | null>(null)
+    const [loadingPremium, setLoadingPremium] = useState(false)
+
+    // Check if user can access premium features
+    const isPremiumUser = user && ['owner', 'super_admin', 'supervisor'].includes(user.role.toLowerCase().replace(' ', '_'))
+
     // Fetch accounts for filter
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -153,7 +168,24 @@ const DashboardOwner: React.FC = () => {
 
     useEffect(() => {
         fetchData()
+        if (isPremiumUser) {
+            fetchPremiumData()
+        }
     }, [date, selectedAccountId])
+
+    // Fetch premium dashboard data
+    const fetchPremiumData = async () => {
+        setLoadingPremium(true)
+        try {
+            const accId = selectedAccountId !== 'all' ? parseInt(selectedAccountId) : undefined
+            const premium = await premiumApi.getPremiumDashboard(date, accId)
+            setPremiumData(premium)
+        } catch (err) {
+            console.error('Failed to load premium data:', err)
+        } finally {
+            setLoadingPremium(false)
+        }
+    }
 
     if (loading && !data) {
         return (
@@ -204,7 +236,7 @@ const DashboardOwner: React.FC = () => {
                     <div className="flex flex-wrap items-center gap-3">
                         {/* Sync Status */}
                         <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm ${sync_status.status === 'LIVE' ? 'bg-green-500' :
-                                sync_status.status === 'DELAY' ? 'bg-yellow-500' : 'bg-red-500'
+                            sync_status.status === 'DELAY' ? 'bg-yellow-500' : 'bg-red-500'
                             }`}>
                             {sync_status.status === 'LIVE' && <CheckCircle size={16} />}
                             {sync_status.status === 'DELAY' && <Clock size={16} />}
@@ -333,8 +365,8 @@ const DashboardOwner: React.FC = () => {
                             <div className="space-y-2">
                                 {alerts.map((alert, idx) => (
                                     <div key={idx} className={`p-3 rounded-lg ${alert.level === 'critical' ? 'bg-red-100 border border-red-300' :
-                                            alert.level === 'warning' ? 'bg-yellow-100 border border-yellow-300' :
-                                                'bg-blue-100 border border-blue-300'
+                                        alert.level === 'warning' ? 'bg-yellow-100 border border-yellow-300' :
+                                            'bg-blue-100 border border-blue-300'
                                         }`}>
                                         <p className="font-semibold text-sm">{alert.message}</p>
                                         <p className="text-xs text-slate-600 mt-1">💡 Aksi: {alert.action}</p>
@@ -344,6 +376,30 @@ const DashboardOwner: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* PREMIUM FEATURES - Owner/Super Admin/Supervisor Only */}
+            {isPremiumUser && premiumData && (
+                <>
+                    {/* Quick Actions */}
+                    <QuickActionsDashboard userRole={user?.role || ''} />
+
+                    {/* Realtime Performance Chart */}
+                    <RealtimePerformanceChart data={premiumData.hourly_performance} />
+
+                    {/* Top Performers */}
+                    <TopPerformersWidget
+                        accounts={premiumData.top_performers.accounts}
+                        hosts={premiumData.top_performers.hosts}
+                        products={premiumData.top_performers.products}
+                    />
+
+                    {/* Alert Center (Enhanced Premium Version) */}
+                    <AlertCenter alerts={premiumData.alerts} />
+
+                    {/* Financial Summary */}
+                    <FinancialSummary data={premiumData.financial_summary} />
+                </>
             )}
 
             {/* WAR ROOM GRID */}
@@ -380,8 +436,8 @@ const DashboardOwner: React.FC = () => {
                                             }`}>{acc.roas.toFixed(2)}x</td>
                                         <td className="px-4 py-3 text-center">
                                             <span className={`px-2 py-1 rounded-full text-xs font-bold ${acc.status === 'AMAN' ? 'bg-green-100 text-green-700' :
-                                                    acc.status === 'WASPADA' ? 'bg-yellow-100 text-yellow-700' :
-                                                        'bg-red-100 text-red-700'
+                                                acc.status === 'WASPADA' ? 'bg-yellow-100 text-yellow-700' :
+                                                    'bg-red-100 text-red-700'
                                                 }`}>{acc.status}</span>
                                         </td>
                                     </tr>

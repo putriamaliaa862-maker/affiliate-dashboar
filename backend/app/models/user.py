@@ -23,6 +23,9 @@ class User(Base):
     full_name = Column(String(255))
     phone = Column(String(50))
     
+    # Access Code for Extension Authentication
+    access_code = Column(String(64), unique=True, nullable=True, index=True)
+    
     # Role-based access control
     role = Column(String(20), nullable=False, index=True)
     # Roles: 'super_admin', 'admin', 'leader', 'affiliate'
@@ -41,6 +44,7 @@ class User(Base):
     
     # Relationships
     activity_logs = relationship("ActivityLog", back_populates="user", cascade="all, delete-orphan")
+    account_assignments = relationship("ShopeeAccountAssignment", back_populates="user", cascade="all, delete-orphan")  # NEW: for Phase 2
     
     def __repr__(self):
         return f"<User {self.username} ({self.role})>"

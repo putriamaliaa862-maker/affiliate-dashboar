@@ -91,18 +91,17 @@ def get_ads_center_data(
     ).group_by(AdsDailySpend.shopee_account_id).all()
     spend_map = {s.shopee_account_id: s.total_spend for s in spends}
 
-    # 2. GMV (from Orders) assuming order date matches
-    # Note: Orders table might need filtering by date type (created_at or date column if exists)
-    # Assuming Order has 'created_at' and we check date part, or if there is a 'date' column.
-    # Checking Order model previously... Order has created_at (DateTime).
-    # sqlite date match: func.date(Order.created_at) == date
-    # But for postgres: func.date(...) works too.
+    # 2. GMV (from Orders) - Use dedicated date column for accuracy
+    # Order model has both created_at and date columns
+    # Use date column for business date matching (more accurate)
+    # Only count completed orders (exclude cancelled)
     gmvs = db.query(
         Order.shopee_account_id,
         func.sum(Order.total_amount).label("total_gmv")
     ).filter(
-        func.date(Order.created_at) == date,
-        Order.shopee_account_id.in_(allowed_ids)
+        func.date(Order.date) == date,  # Use date column instead of created_at
+        Order.shopee_account_id.in_(allowed_ids),
+        Order.status == 'completed'  # Only count completed orders
     ).group_by(Order.shopee_account_id).all()
     
     gmv_map = {g.shopee_account_id: g.total_gmv for g in gmvs}

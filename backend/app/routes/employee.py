@@ -13,7 +13,7 @@ from app.models.activity_log import ActivityLog
 from app.schemas.employee import EmployeeCreate, EmployeeUpdate, EmployeeResponse
 from app.auth.dependencies import get_current_user, require_role
 
-router = APIRouter()
+router = APIRouter(prefix="/api/employees", tags=["employees"])
 
 
 @router.post("", response_model=EmployeeResponse, status_code=status.HTTP_201_CREATED)

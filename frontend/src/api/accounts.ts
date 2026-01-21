@@ -8,6 +8,12 @@ export const accountApi = {
         return response.data
     },
 
+    getMy: async () => {
+        // NEW: Get current user's assigned accounts only
+        const response = await api.get('/shopee-accounts/my')
+        return response.data
+    },
+
     getById: async (id: number) => {
         const response = await api.get(`/shopee-accounts/${id}`)
         return response.data

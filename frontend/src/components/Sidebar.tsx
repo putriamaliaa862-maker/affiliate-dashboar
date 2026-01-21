@@ -15,7 +15,8 @@ import {
   Database,
   TrendingUp,
   LineChart,
-  Crown
+  Crown,
+  Bot
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -39,6 +40,7 @@ const Sidebar: React.FC = () => {
         { label: 'Reports', icon: FileText, path: '/reports' },
         { label: 'Shift Bonus', icon: Coins, path: '/shift-bonus', requiredRoles: ['leader', 'admin', 'super_admin'] },
         { label: 'Daily Insights', icon: TrendingUp, path: '/daily-insights', requiredRoles: ['leader', 'admin', 'super_admin', 'owner'] },
+        { label: '🤖 Realtime Monitor', icon: Bot, path: '/realtime', requiredRoles: ['admin', 'super_admin', 'owner'] },
         // Keeping Daily Summary here as it fits the category, though not explicitly in the short list
         { label: 'Ringkasan Harian', icon: LineChart, path: '/daily-summary', requiredRoles: ['owner', 'admin', 'super_admin'] },
       ]

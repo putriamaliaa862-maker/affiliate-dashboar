@@ -18,7 +18,7 @@ from app.models.shopee_account import ShopeeAccount
 from app.auth.dependencies import get_current_user, require_role
 from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter(prefix="/api/reports", tags=["Reports"])
 
 
 class ReportFilters(BaseModel):

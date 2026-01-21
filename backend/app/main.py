@@ -15,15 +15,19 @@ from app.routes import (
     report,
     live_streaming,
     shopee_scraper,
+    shopee_data,  # NEW: realtime sync
+    shopee_data_sync,  # NEW PHASE 2: Auto Connect
+    shopee_data_sync_supabase,  # NEW: Supabase staging table processor
     analytics,
     bonus,
-    import_data,
     import_data,
     insights,
     ads,
     dashboard,
     import_cookies,
-    live_products
+    live_products,
+    premium_dashboard,  # NEW: Premium features
+    bot_ingest  # NEW: 24H Playwright Bot
 )
 
 logger = logging.getLogger(__name__)
@@ -62,31 +66,38 @@ def read_root():
 
 
 @app.get("/health")
-def health_check():
+def health():
     """Health check endpoint"""
-    return {"status": "ok"}
+    return {
+        "status": "healthy",
+        "version": settings.app_version,
+        "docs": "/docs"
+    }
 
 
-# Include routers
-# Authentication & User Management
-app.include_router(auth.router, prefix="/api")
-app.include_router(users.router, prefix="/api")
-app.include_router(activity_logs.router, prefix="/api")
-
-# Business Logic
-app.include_router(studio.router, prefix="/api/studios", tags=["Studios"])
-app.include_router(employee.router, prefix="/api/employees", tags=["Employees"])
-app.include_router(attendance.router, prefix="/api/attendances", tags=["Attendance"])
-app.include_router(shopee_account.router, prefix="/api/shopee-accounts", tags=["Shopee Accounts"])
-app.include_router(commission.router, prefix="/api/commissions", tags=["Commissions"])
-app.include_router(report.router, prefix="/api/reports", tags=["Reports"])
-app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
-app.include_router(bonus.router, prefix="/api/bonus", tags=["Bonus"])
-app.include_router(import_data.router, prefix="/api/import", tags=["Import"])
-app.include_router(insights.router, prefix="/api/insights", tags=["Insights"])
-app.include_router(ads.router) # /api/ads prefix is defined in the router itself
-app.include_router(dashboard.router, prefix="/api") # Dashboard owner endpoint
-app.include_router(import_cookies.router, prefix="/api") # Extension import cookies
+# Register all routers
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(activity_logs.router)
+app.include_router(studio.router)
+app.include_router(employee.router)
+app.include_router(attendance.router)
+app.include_router(shopee_account.router)
+app.include_router(commission.router)
+app.include_router(report.router)
 app.include_router(live_streaming.router)
-app.include_router(shopee_scraper.router, prefix="/api")
-app.include_router(live_products.router, prefix="/api")
+app.include_router(shopee_scraper.router)
+app.include_router(shopee_data.router)
+app.include_router(shopee_data_sync.router)  # NEW PHASE 2: Auto Connect
+app.include_router(shopee_data_sync_supabase.router)  # NEW: Supabase staging processor
+app.include_router(analytics.router)
+app.include_router(bonus.router)
+app.include_router(import_data.router)
+app.include_router(insights.router)
+app.include_router(ads.router)
+app.include_router(dashboard.router)
+app.include_router(import_cookies.router)
+app.include_router(live_products.router)
+app.include_router(premium_dashboard.router)  # NEW: Premium dashboard
+app.include_router(bot_ingest.router)  # NEW: 24H Playwright Bot
+

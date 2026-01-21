@@ -1,0 +1,14 @@
+[
+    {
+        "id": "test_account_1",
+        "shopee_account_id": "affiliate_123456",
+        "shop_name": "Test Store 1",
+        "username": "teststore1",
+        "profile_dir": "profile_test1",
+        "enabled": true,
+        "urls": {
+            "creator_live": "https://creator.shopee.co.id/live/dashboard",
+            "ads_seller": "https://seller.shopee.co.id/portal/marketing/pas"
+        }
+    }
+]

@@ -19,7 +19,7 @@ from app.auth import get_current_user
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
+router = APIRouter(prefix="/api/dashboard", tags=["Dashboard"])
 
 
 @router.get("/owner")

@@ -1,9 +1,10 @@
-node_modules/
+# Environment variables
 .env
 .env.local
+.env.production
 .env.*.local
-dist/
-build/
+
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -12,9 +13,63 @@ __pycache__/
 env/
 venv/
 ENV/
-postgres_data/
-.DS_Store
+.venv
+*.db
+*.sqlite
+*.sqlite3
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database
+postgres_data/
+*.db
+*.sqlite
+affiliate.db
+test.db
+
+# Extension
+extension/dist/
+extension/*.zip
+*.crx
+*.pem
+*.rar
+extension.rar
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

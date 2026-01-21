@@ -11,7 +11,7 @@ from app.models.activity_log import ActivityLog
 from app.models.user import User
 from app.auth.dependencies import get_current_user, require_role
 
-router = APIRouter(prefix="/activity-logs", tags=["Activity Logs"])
+router = APIRouter(prefix="/api/activity-logs", tags=["Activity Logs"])
 
 
 @router.get("")

@@ -1,0 +1,32 @@
+EXTENSION RELOAD GUIDE
+======================
+
+After making changes to extension files, follow these steps:
+
+1. Open Chrome and go to: chrome://extensions
+
+2. Enable "Developer mode" (toggle in top-right corner)
+
+3. Find "Shopee Affiliate Scraper" extension
+
+4. Click the RELOAD button (circular arrow icon)
+   OR click "Remove" then "Load unpacked" again
+
+5. Load extension folder:
+   C:\workspace\affiliate-dashboard\extension
+
+6. If you see any errors:
+   - Click "Errors" button on extension card
+   - Check console in service worker for logs
+
+QUICK DEBUG:
+- Right-click extension icon > Inspect popup
+- Check F12 Console on Shopee pages
+- Service worker: click "service worker" link in extension card
+
+VERIFY STORAGE:
+In popup DevTools console, run:
+  chrome.storage.local.get(['connected_identity'], console.log)
+
+Should show:
+  {connected_identity: {shopee_account_id: "...", shop_name: "..."}}

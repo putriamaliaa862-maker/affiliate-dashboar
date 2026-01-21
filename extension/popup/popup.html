@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Shopee Scraper Extension</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <div class="popup-container">
+    <div class="header">
+      <h2>🛒 Shopee Affiliate Scraper</h2>
+      <div class="status" id="status">
+        <span class="status-dot"></span>
+        <span class="status-text">Loading...</span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-label">Last Sync</div>
+        <div class="stat-value" id="lastSync">Never</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Total Synced</div>
+        <div class="stat-value" id="totalSynced">0</div>
+      </div>
+    </div>
+
+    <!-- Access Code Section -->
+    <div class="section">
+      <div class="section-header">
+        <span>🔐 Access Code</span>
+        <span id="codeStatus" class="code-status"></span>
+      </div>
+      <div class="input-group">
+        <input type="text" id="accessCodeInput" placeholder="Paste from Dashboard Settings" maxlength="20" />
+        <button id="btnSaveCode" class="btn btn-small">Save</button>
+      </div>
+    </div>
+
+    <!-- Connection Section -->
+    <div class="section">
+      <div class="section-header">🔗 Account Connection</div>
+      <div id="connStatus" class="status-badge status-disconnected">⚠️ Not Connected</div>
+      <div id="connectedInfo" class="connected-info" style="display:none;">
+        <div class="info-row">
+          <span class="info-label">Shop:</span>
+          <span id="connectedShopName" class="info-value">-</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">ID:</span>
+          <span id="connectedAccountId" class="info-value">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions">
+      <button id="btnConnectSyncAll" class="btn btn-primary btn-large">
+        🚀 Connect + Sync Semua
+      </button>
+      <button id="btnManualSync" class="btn btn-secondary">
+        🔄 Manual Sync
+      </button>
+      <button id="btnOpenSettings" class="btn btn-secondary btn-small">
+        ⚙️ Settings
+      </button>
+    </div>
+
+    <div class="instructions">
+      <h4>📝 Cara Pakai:</h4>
+      <ol>
+        <li>Paste <strong>Access Code</strong> dari Dashboard Settings</li>
+        <li>Klik <strong>Connect + Sync Semua</strong></li>
+        <li>Data otomatis masuk ke dashboard!</li>
+      </ol>
+    </div>
+
+    <div class="footer">
+      <small>API: <span id="apiEndpoint">localhost:8000</span></small>
+    </div>
+
+    <div id="toastMessage" class="toast" style="display:none;"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>

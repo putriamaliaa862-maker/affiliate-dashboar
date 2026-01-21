@@ -22,7 +22,7 @@ from app.auth.jwt import (
 )
 from app.auth.dependencies import get_current_user
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+router = APIRouter(prefix="/api/auth", tags=["authentication"])
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -183,3 +183,84 @@ async def get_current_user_info(
     Get current authenticated user information.
     """
     return current_user.to_dict()
+
+
+# ==================== ACCESS CODE MANAGEMENT ====================
+
+def generate_access_code() -> str:
+    """
+    Generate a unique access code in format: XXXX-XXXX-XXXX
+    Uses uppercase alphanumeric characters (excluding confusing ones like O, 0, I, 1)
+    """
+    import random
+    import string
+    
+    # Character set (exclude confusing chars)
+    chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+    
+    # Generate 3 segments of 4 characters each
+    segments = []
+    for _ in range(3):
+        segment = ''.join(random.choice(chars) for _ in range(4))
+        segments.append(segment)
+    
+    return '-'.join(segments)
+
+
+@router.post("/access-code/regenerate")
+async def regenerate_access_code(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Generate or regenerate access code for current user.
+    Access code is used for extension authentication.
+    
+    Returns the new access code.
+    """
+    max_attempts = 10
+    for attempt in range(max_attempts):
+        new_code = generate_access_code()
+        
+        # Check uniqueness
+        existing = db.query(User).filter(User.access_code == new_code).first()
+        if not existing:
+            # Update current user's access code
+            current_user.access_code = new_code
+            db.commit()
+            db.refresh(current_user)
+            
+            # Log activity
+            log = ActivityLog(
+                user_id=current_user.id,
+                action="access_code_regenerated",
+                entity_type="user",
+                entity_id=current_user.id
+            )
+            db.add(log)
+            db.commit()
+            
+            return {
+                "access_code": new_code,
+                "message": "Access code generated successfully"
+            }
+    
+    # Unlikely to reach here, but handle it
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail="Failed to generate unique access code. Please try again."
+    )
+
+
+@router.get("/access-code/me")
+async def get_my_access_code(
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get current user's access code.
+    Returns null if not yet generated.
+    """
+    return {
+        "access_code": current_user.access_code,
+        "has_code": current_user.access_code is not None
+    }

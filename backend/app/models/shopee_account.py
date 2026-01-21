@@ -15,6 +15,7 @@ class ShopeeAccount(Base):
     access_token = Column(String(500))
     token_expire_at = Column(DateTime)
     is_active = Column(Boolean, default=True)
+    last_synced_at = Column(DateTime, nullable=True)  # NEW: Track extension sync
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -22,4 +23,5 @@ class ShopeeAccount(Base):
     studio = relationship("Studio", back_populates="shopee_accounts")
     campaigns = relationship("Campaign", back_populates="shopee_account", cascade="all, delete-orphan")
     orders = relationship("Order", back_populates="shopee_account", cascade="all, delete-orphan")
-    live_snapshots = relationship("LiveProductSnapshot", back_populates="account", cascade="all, delete-orphan") # NEW: for Live Products
+    live_snapshots = relationship("LiveProductSnapshot", back_populates="account", cascade="all, delete-orphan")
+    assignments = relationship("ShopeeAccountAssignment", back_populates="shopee_account", cascade="all, delete-orphan")  # NEW

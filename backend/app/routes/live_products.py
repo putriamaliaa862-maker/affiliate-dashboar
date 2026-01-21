@@ -23,7 +23,7 @@ from app.schemas.live_product import (
     LiveSyncLogResponse
 )
 
-router = APIRouter(prefix="/live-products", tags=["Live Products"])
+router = APIRouter(prefix="/api/live-products", tags=["Live Products"])
 
 
 # ==================== RBAC Helpers ====================
