@@ -22,4 +22,18 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    chunkSizeWarningLimit: 1000, // Increase limit to 1MB (default is 500KB)
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split vendor chunks
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'chart-vendor': ['recharts'],
+          'ui-vendor': ['lucide-react'],
+          'utils-vendor': ['axios', 'zustand', 'date-fns'],
+        },
+      },
+    },
+  },
 })
